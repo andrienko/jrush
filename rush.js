@@ -19,7 +19,7 @@
 
     RushObject.prototype = [];
 
-    // Extending the RushObject prototype (Mass-object methods)
+    // Extending the RushObject prototype with mass-object methods
     extend(RushObject.prototype, {
         query: function (wat) {
             this.reset();
@@ -36,17 +36,7 @@
                 return this.add(document.querySelectorAll(wat));
             return this;
         },
-        css: function (csar) {
-            this.forEach(function (content) {
-                content.css(csar);
-            });
-            return this;
-        },
-        html: function (content) {
-            this.forEach(function (element) {
-                element.html(content);
-            });
-        },
+
         reset: function () {
             while (this.length)
                 this.pop();
@@ -54,25 +44,33 @@
         }
     });
 
+    // Extending the RushObject prototype with mass-object methods appliable to single objects
+    ['css','html','text','hide','show','addClass','toggleClass'].forEach(function(type){
+        RushObject.prototype[type] = function(content){
+            this.forEach(function(element){
+                element[type](content);
+            });
+            return this;
+        };
+    });
+
     // Extending the Element prototype (Single-object methods)
     extend(Element.prototype, {
+
         css: function (csar) {
-            for (var index in csar) {
+            if(arguments.length>1)this.style[arguments[0]] = arguments[1];
+            else for (var index in csar) {
                 this.style[index] = csar[index];
             }
             return this;
         },
         html: function (html) {
             this.innerHTML = html;
+            return this;
         },
         text: function(text){
             this.textContent = text;
-        },
-        next: function () {
-            return this.nextSibling;
-        },
-        prev: function () {
-            return this.previousSibling;
+            return this;
         },
         hide: function(){
             return this.css('display','none');
@@ -84,14 +82,17 @@
             this.classList.add(className);
             return this;
         },
-        siblings: function(){
-            Array.prototype.filter.call(this.parentNode.children, function(child){
-                return child !== el;
-            });
-        },
         toggleClass: function(className){
             this.classList.toggle(className);
             return this;
+        },
+
+
+        next: function () {
+            return this.nextSibling;
+        },
+        prev: function () {
+            return this.previousSibling;
         },
         parent: function () {
             return this.parentNode;
@@ -99,27 +100,18 @@
         is:function(selector){
             return this.matches.call(this,selector);
         }
+        //siblings: function(){
+        //    Array.prototype.filter.call(this.parentNode.children, function(child){
+        //        return child !== el;
+        //    });
+        //},
+
+
     });
 
     // Adding .matches. Old browsers etc.
-    (function(b){b.matches||["","ms","moz","webkit","o"].forEach(function(a){a=a+(a?"M":"m")+"atchesSelector";b[a]&&(b.matches=b[a])})})(Element.prototype);
+    (function(b){b.matches||["","ms","moz","webkit","o"].forEach(function(a){a=a+(a?"M":"m")+"atchesSelector";b[a]&&(b.matches=b[a])});b.is=b.matches})(Element.prototype);
 
     window.rush = rush;
 
 })();
-
-window.$ = window.rush;
-
-
-var ba = {
-    matchesSelector:'yes',
-    msMatchesSelector:'yep',
-    mozMatchesSelector:'yeah'
-};
-
-
-
-
-
-
-
