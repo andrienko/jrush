@@ -1,0 +1,1 @@
+compiler --js rush.js --js_output_file rush.min.js
