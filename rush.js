@@ -36,16 +36,22 @@
                 return this.add(document.querySelectorAll(wat));
             return this;
         },
-
+        each:RushObject.prototype.forEach,
         reset: function () {
             while (this.length)
                 this.pop();
+            return this;
+        },
+        filter: function(wat){
+            var filtered = Array.prototype.filter.call(this,wat);
+            this.reset();
+            this.add(filtered);
             return this;
         }
     });
 
     // Extending the RushObject prototype with mass-object methods appliable to single objects
-    ['css','html','text','hide','show','addClass','toggleClass'].forEach(function(type){
+    ['css','html','text','hide','show','addClass','toggleClass','after','append','before','empty'].forEach(function(type){
         RushObject.prototype[type] = function(content){
             this.forEach(function(element){
                 element[type](content);
@@ -72,11 +78,26 @@
             this.textContent = text;
             return this;
         },
+        append: function(el){
+            this.appendChild(el);
+        },
         hide: function(){
             return this.css('display','none');
         },
+        empty: function(){
+            this.html('');
+        },
         show: function(){
             return this.css('display','');
+        },
+        hasClass:function(classname){
+            return this.classList.contains(classname)
+        },
+        after:function(what){
+            this.insertAdjacentHTML('afterend', what);
+        },
+        before:function(what){
+            this.insertAdjacentHTML('beforebegin', what);
         },
         addClass: function(className){
             this.classList.add(className);
