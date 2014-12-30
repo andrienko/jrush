@@ -1,8 +1,8 @@
 (function (rush) {
 
     // The constructor wrapper
-    rush = function (a) {
-        return new RushObject(a);
+    rush = function (selector,context) {
+        return new RushArray(selector,context);
     };
 
     var extend = function (what, with_what) {
@@ -10,22 +10,25 @@
     };
 
     // The constructor function
-    var RushObject = function (a) {
-        if (a != undefined)
-            if (typeof a == 'function')
-                document.addEventListener('DOMContentReady', a);
-            else this.add(a);
+    var RushArray = function (selector,context) {
+        if (selector != undefined)
+            if (typeof selector == 'function')
+                document.addEventListener('DOMContentReady', selector);
+            else this.add(selector,context);
     };
 
-    RushObject.prototype = [];
+    RushArray.prototype = [];
 
-    // Extending the RushObject prototype with mass-object methods
-    extend(RushObject.prototype, {
+    // Extending the RushArray prototype with mass-object methods
+    extend(RushArray.prototype, {
         query: function (wat) {
             this.reset();
             this.add(wat);
         },
-        add: function (wat) {
+        add: function (wat,context) {
+
+            if(!(context instanceof Element))context = document;
+
             var self = this;
             wat instanceof NodeList && (wat = [].slice.call(wat));
             if(wat instanceof Array)
@@ -33,10 +36,10 @@
             else if(wat instanceof Element)
                 this.push(wat);
             else
-                return this.add(document.querySelectorAll(wat));
+                return this.add(context.querySelectorAll(wat));
             return this;
         },
-        each:RushObject.prototype.forEach,
+        each:RushArray.prototype.forEach,
         reset: function () {
             while (this.length)
                 this.pop();
@@ -50,15 +53,17 @@
         }
     });
 
-    // Extending the RushObject prototype with mass-object methods appliable to single objects
-    ['css','html','text','hide','show','addClass','toggleClass','after','append','before','empty'].forEach(function(type){
-        RushObject.prototype[type] = function(content){
-            this.forEach(function(element){
-                element[type](content);
-            });
-            return this;
-        };
-    });
+    // Extending the RushArray prototype with mass-object methods appliable to single objects
+    ['css','html','text','hide','show','addClass','toggleClass','after','append','before','empty','attr'].forEach(
+        function(type){
+            RushArray.prototype[type] = function(content,value){
+                this.forEach(function(element){
+                    element[type](content,value);
+                });
+                return this;
+            };
+        }
+    );
 
     // Extending the Element prototype (Single-object methods)
     extend(Element.prototype, {
@@ -73,6 +78,9 @@
         html: function (html) {
             this.innerHTML = html;
             return this;
+        },
+        find: function(selector){
+            rush(selector,this);
         },
         text: function(text){
             this.textContent = text;
@@ -107,8 +115,10 @@
             this.classList.toggle(className);
             return this;
         },
-
-
+        attr:function(name,value){
+            if(value==undefined)value=name;
+            else this.setAttribute(name,name);
+        },
         next: function () {
             return this.nextSibling;
         },
@@ -133,6 +143,6 @@
     // Adding .matches. Old browsers etc.
     (function(b){b.matches||["","ms","moz","webkit","o"].forEach(function(a){a=a+(a?"M":"m")+"atchesSelector";b[a]&&(b.matches=b[a])});b.is=b.matches})(Element.prototype);
 
-    window.rush = rush;
+    window.rush = Element.prototype.rush = rush;
 
 })();
