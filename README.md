@@ -30,6 +30,69 @@ Some rush methods are added to every DOM element.
 The window.rush(selector) method returns an array-like object (it's prototype is array). The object should contain
 elements of querySelectorAll(selector) result (ones matching the [selector](http://www.w3.org/TR/css3-selectors/)).
 
+### Side effects
+
+The script adds `Element.prototype.matches` if there is none (using prefixed functions)
+
+### Multiple element features
+
+#### add
+
+Adds new elements to query
+
+    rush('p').addClass('paragraph').add('h2').addClass('rushed');
+    // Adds paragraph class to p elements, then adds rushed class to h2 and p elements,  
+
+#### query
+
+Same as previous, only it resets the object before adding new elements
+
+    rush('p').addClass('paragraph').query('h2').addClass('heading');
+    // Adds paragraph class to p, then resets query and adds heading class to h2 elements
+    
+#### each
+
+Alias for array's forEach
+
+#### filter
+
+Filters the array. Works like usual Array.filter when function passed, filters with selector when selector string passed
+
+    rush('p, h2').filter('.active, .visible').filter(':not(.active):not(.visible)');
+    // Will select all p and h2 elements, having either active or visible class but not both
+
+### Single element features
+
+#### find
+
+Creates new rush object by running query over element's children
+
+    document.getElementByID('#header').find('p').hide();
+    // Hide all p elements inside header
+    
+#### hasClass
+
+Returns true if element has the class
+
+    if(document.getElementByID('#header').hasClass('floating')){
+        console.log('The element has the "floating" class');
+    }
+    
+#### next, prev and parent
+
+Returns nextSibling, previousSibling and parentNode
+       
+#### siblings
+
+Returns all element's siblings as a rush array
+
+    rush('h2')[0].siblings().hide()
+    // Will hide all neighbors of first h2 element on the document
+    
+#### is
+
+    An alias for matches
+
 ### Both single element and multiple element features
 
 #### html and text
@@ -47,7 +110,31 @@ These will change matched elements' innerHTML and textContent properties:
     
 #### css
 
-This will change the document inline style (accessing style property). If a
+This will change the document inline style (accessing style property).
 
-    rush('#example').css('background','#fff');
-    rush('#example').css('background','#fff');
+If a single parameter passed - it should be object, which keys should 
+
+    rush('#example').css('background','#fff').css('color','#000');
+    rush('#example').css({background:'#fff',color:'#000'});
+    
+#### empty
+
+Will call html('');
+
+#### hide and show
+
+Will call css('display','none') and css('display','');
+
+#### addClass, removeClass and toggleClass
+
+Will add, remove and toggle class passed by classname:
+
+    rush('#button').toggleClass('active');
+    
+#### after, before and append, prepend
+ 
+Inserts text right after/before element and adds text right after/before element contents.
+ 
+    rush('a')
+      .before('The link: ').after(' (click it!)')
+      .prepend('[').append(']');
