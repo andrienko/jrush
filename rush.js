@@ -5,6 +5,11 @@
         return new RushArray(selector,context);
     };
 
+    var t = function(stuff){
+        if(stuff instanceof Node)return stuff;
+        else return document.createTextNode(stuff.toString());
+    };
+
     var extend = function (what, with_what) {
         for (var name in with_what)what[name] = with_what[name];
     };
@@ -41,8 +46,8 @@
         },
         each:RushArray.prototype.forEach,
         reset: function () {
-            while (this.length)
-                this.pop();
+            this.length=0;
+            //while (this.length) this.pop();
             return this;
         },
         filter: function(wat){
@@ -59,7 +64,7 @@
         'css','empty','html','text','attr',
         'hide','show',
         'addClass','toggleClass','removeClass',
-        'after','before','append'
+        'after','before','append','prepend'
 
     ].forEach(
 
@@ -96,7 +101,12 @@
             return this;
         },
         append: function(el){
-            this.appendChild(el);
+            this.appendChild(t(el));
+            return this;
+        },
+        prepend: function (el) {
+            this.insertBefore(t(el), this.firstChild);
+            return this;
         },
         hide: function(){
             return this.css('display','none');
@@ -111,10 +121,12 @@
             return this.classList.contains(classname)
         },
         after:function(what){
-            this.insertAdjacentHTML('afterend', what);
+            this.insertAdjacentHTML('afterend', what)
+            return this;
         },
         before:function(what){
             this.insertAdjacentHTML('beforebegin', what);
+            return this;
         },
         addClass: function(className){
             this.classList.add(className);
