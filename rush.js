@@ -54,7 +54,15 @@
     });
 
     // Extending the RushArray prototype with mass-object methods appliable to single objects
-    ['css','html','text','hide','show','addClass','toggleClass','after','append','before','empty','attr'].forEach(
+    [
+
+        'css','empty','html','text','attr',
+        'hide','show',
+        'addClass','toggleClass','removeClass',
+        'after','before','append'
+
+    ].forEach(
+
         function(type){
             RushArray.prototype[type] = function(content,value){
                 this.forEach(function(element){
@@ -63,6 +71,7 @@
                 return this;
             };
         }
+
     );
 
     // Extending the Element prototype (Single-object methods)
@@ -109,6 +118,10 @@
         },
         addClass: function(className){
             this.classList.add(className);
+            return this;
+        },
+        removeClass: function(className){
+            this.classList.remove(className);
             return this;
         },
         toggleClass: function(className){
