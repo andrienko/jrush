@@ -51,7 +51,13 @@
             return this;
         },
         filter: function(wat){
-            var filtered = Array.prototype.filter.call(this,wat);
+            var fn = wat;
+            if(typeof wat != "function")
+            fn = function(element){
+                return element.is(wat)
+            };
+
+            var filtered = Array.prototype.filter.call(this,fn);
             this.reset();
             this.add(filtered);
             return this;
@@ -155,14 +161,13 @@
         },
         is:function(selector){
             return this.matches.call(this,selector);
+        },
+        siblings: function(){
+            var el = this;
+            return rush(Array.prototype.filter.call(this.parentNode.children, function(child){
+                return child !== el;
+            }));
         }
-        //siblings: function(){
-        //    Array.prototype.filter.call(this.parentNode.children, function(child){
-        //        return child !== el;
-        //    });
-        //},
-
-
     });
 
     // Adding .matches. Old browsers etc.
