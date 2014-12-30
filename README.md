@@ -30,6 +30,8 @@ Some rush methods are added to every DOM element.
 The window.rush(selector) method returns an array-like object (it's prototype is array). The object should contain
 elements of querySelectorAll(selector) result (ones matching the [selector](http://www.w3.org/TR/css3-selectors/)).
 
+Each Element object now has several additional methods (described below).
+
 ### Side effects
 
 The script adds `Element.prototype.matches` if there is none (using prefixed functions)
