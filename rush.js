@@ -1,17 +1,18 @@
 (function (rush) {
 
-    // The constructor wrapper
-    rush = function (selector,context) {
-        return new RushArray(selector,context);
-    };
+    /** Adds whatever contained in with_what object into what object. */
+    var extend = function (what, with_what) { for (var name in with_what)what[name] = with_what[name];};
 
+    /** If node passed - returns it, else - returns text node containing passed.toString(); */
     var t = function(stuff){
         if(stuff instanceof Node)return stuff;
         else return document.createTextNode(stuff.toString());
     };
 
-    var extend = function (what, with_what) {
-        for (var name in with_what)what[name] = with_what[name];
+
+    // The constructor wrapper (to not use 'new' keyword)
+    rush = function (selector,context) {
+        return new RushArray(selector,context);
     };
 
     // The constructor function
@@ -22,7 +23,22 @@
             else this.add(selector,context);
     };
 
-    RushArray.prototype = [];
+    rush.fn = RushArray.prototype = [];
+
+
+    rush.extend = function(name,single_method) {
+
+        Element.prototype[name] = single_method;
+
+        RushArray.prototype[name] = function(value){
+            this.forEach(function(element){
+                single_method.apply(element,value);
+            });
+            return this;
+        };
+
+    };
+
 
     // Extending the RushArray prototype with mass-object methods
     extend(RushArray.prototype, {
@@ -30,6 +46,7 @@
             this.reset();
             this.add(wat);
         },
+
         add: function (wat,context) {
 
             if(!(context instanceof Element))context = document;
@@ -44,6 +61,7 @@
                 return this.add(context.querySelectorAll(wat));
             return this;
         },
+
         each:RushArray.prototype.forEach,
         reset: function () {
             this.length=0;
@@ -70,7 +88,7 @@
         'css','empty','html','text','attr',
         'hide','show',
         'addClass','toggleClass','removeClass',
-        'after','before','append','prepend'
+        'after','before','append','prepend','remove'
 
     ].forEach(
 
@@ -161,6 +179,9 @@
         },
         is:function(selector){
             return this.matches.call(this,selector);
+        },
+        remove:function() {
+            this.parentNode.removeChild(this);
         },
         siblings: function(){
             var el = this;

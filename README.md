@@ -1,10 +1,11 @@
 jRush
 ===
 
-Rush is a **tiny** library for working with DOM. Begina a wrapper around **querySelectorAll** with chaining and some 
+Rush is a **tiny** (~3KB) library for working with DOM. Begina a wrapper around **querySelectorAll** with chaining and some 
 events. Nothing more.
 
- - It's not [jQuery](http://jquery.org) nor [jQuery alternative](http://zeptojs.com/).
+ - It's not [jQuery](http://jquery.org) nor [jQuery alternative](http://zeptojs.com/). Although, it is inspired by it
+ a lot. So if you know jQuery - you will easily use rush.
  - No animations support. No AJAX. Only DOM
  - NOT cross-browser. Should work in IE11. Intended to be used in modern browser.
  - Not ultra-optimized. If you need something to work with thousands of elements at once this one is probably not for
@@ -14,6 +15,8 @@ events. Nothing more.
   used (not redefining the basic array methods, but may redefine methods added by other libraries etc.) I don't care, 
   really.
  - NOT fail-safe. There is no poka-yokes, syntax checks or exception catching for you.
+ - Idea is take as much as you can from CSS3 selectors. Say, you can use rush('p')[0] to get first p element, but
+ sometimes (depends on document structure) you could use rush('p:first-of-type'). You got the point.  
 
 Usage
 ---
@@ -93,7 +96,7 @@ Returns all element's siblings as a rush array
     
 #### is
 
-    An alias for matches
+An alias for `Element.prototype.matches`. Returns true if element matches selector.
 
 ### Both single element and multiple element features
 
@@ -140,3 +143,45 @@ Inserts text right after/before element and adds text right after/before element
     rush('a')
       .before('The link: ').after(' (click it!)')
       .prepend('[').append(']');
+      
+#### remove
+
+Deletes the element.
+
+    rush('p').remove();
+    
+Will return an array of no longer existing elements.
+      
+Extending
+---
+
+Just like in jQuery - there is a rush.fn object you can extend with your own functions (or override rush built-in ones)
+
+    rush.fn.dbg = function() {
+        this.each(function(a){
+            console.log(a);
+        });
+        return this;
+    };
+    
+However, this function will be applied only to mass-object functions (the Element prototype will be not extended for it)
+To add the function to single element, too - we would have to extend the Element.prototype object:
+ 
+    Element.prototype = function() {
+            console.log(this);
+            return this;
+    };
+    
+To add function to BOTH mass- and single-element - you can use rush.extend function which takes 2 parameters - the name
+of method and it's function:
+
+    rush.extend('turn_red',function(){
+        this.css({color:'#fff',background:'#f00'});
+        return this;
+    });
+    
+    rush('p').turn_red();
+    rush('p')[0].turn_red();
+    
+
+    
