@@ -1,0 +1,11 @@
+{
+  "name": "rush",
+  "version": "0.2.1",
+  "homepage": "https://github.com/andrienko/jrush",
+  "authors": [ "andrienko <ilia@andrienko.org>" ],
+  "description": "3KB jQuery-like DOM walking library",
+  "main": "rush.min.js",
+  "keywords": ["DOM","jQuery","zepto","rush"],
+  "license": "MIT",
+  "ignore": [ "**/.*", ".git", ".gitignore", "node_modules", "bower_components", "test", "tests"]
+}
